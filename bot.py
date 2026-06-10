@@ -21,16 +21,17 @@ anthropic_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 async def get_todays_meetings():
     today = datetime.now().strftime("%Y-%m-%d")
-    headers = {
-        "Authorization": f"Bearer {FATHOM_API_KEY}",
-        "Content-Type": "application/json"
-    }
+    headers = {"X-Api-Key": FATHOM_API_KEY}
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             response = await client.get(
-                "https://api.fathom.ai/v1/calls",
+                "https://api.fathom.ai/external/v1/meetings",
                 headers=headers,
-                params={"created_after": f"{today}T00:00:00Z", "include_summary": "true", "include_action_items": "true"}
+                params={
+                    "created_after": f"{today}T00:00:00Z",
+                    "include_summary": "true",
+                    "include_action_items": "true"
+                }
             )
             logger.info(f"Fathom API response: {response.status_code}")
             if response.status_code == 200:
